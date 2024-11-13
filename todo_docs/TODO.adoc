@@ -1,0 +1,83 @@
+= Requisitos do Projeto
+
+== Requisitos Não Funcionais
+* [ ] R61: Disponibilizar uma interface em modo texto onde o utilizador possa interagir com a aplicação.
+* [ ] R62: Guardar todas as ações dos utilizadores num ficheiro de log.
+* [ ] R63: Permitir consulta do log de ações através da aplicação.
+* [ ] R64: Registar o número total de execuções e o login do último utilizador, guardando num ficheiro de objetos.
+* [ ] R65: Estruturação da aplicação em Programação Orientada a Objetos, utilizando Java.
+* [ ] R66: Implementar estruturas de armazenamento otimizadas.
+* [ ] R67: Validar todas as entradas de dados do utilizador.
+* [ ] R68: Apresentar mensagens informativas ao utilizador quando necessário.
+
+== Gestão de Acesso e Utilizadores
+* [ ] R1: Permitir registo e autenticação de utilizadores.
+* [ ] R2: Acesso à aplicação com três tipos de utilizadores: administradore*, técnico* e clientes.
+* [ ] R3: Utilizadores têm os atributos: login, password, nome, estado (ativo/inativo), email e tipo(administradores, técnicos ou clientes).
+* [ ] R4: Cada utilizador pode apenas visualizar e alterar a sua própria informação.
+* [ ] R5: O login e email devem ser únicos.
+* [ ] R6: Clientes e técnicos têm adicionalmente NIF, morada e contacto telefónico (NIF e contacto únicos).
+* [ ] R7: Ao iniciar, caso não existam utilizadores, a aplicação solicita criação de um administrador.
+* [ ] R8: Mensagem "Bem-vindo [nome utilizador]" após login.
+* [ ] R9: Mensagem "Adeus [nome utilizador]" ao encerrar a aplicação.
+
+== Funções de Utilizadores
+* [ ] R10: Administradores aprovam pedidos de registo. Pedidos não aprovados não podem iniciar sessão.
+* [ ] R11: Administradores aprovam e encerram pedidos de serviço e associam um técnico responável.
+* [ ] R12: Técnicos introduzem equipamentos, categorias e fornecedores.
+* [ ] R13: Clientes realizam pedidos de compras. Os pedidos devem ser aprovados pelos técnicos.
+* [ ] R14: Administradores podem gerir todas as vendas realizadas.
+* [ ] R15: Técnicos podem gerir apenas as suas vendas.
+* [ ] R16: Clientes podem gerir apenas as suas compras.
+
+== Processo de Serviços
+* [ ] R17: Clientes iniciam uma encomenda, indicando produtos pretendidos.
+* [ ] R18: Administrador aprova serviço e associa um técnico.
+* [ ] R19: Técnico regista o processo, cria sub-tarefas e pode associar técnicos adicionais.
+* [ ] R20: Serviço inclui produtos, data, descrição, estado, tempo de processamento e valor total.
+* [ ] R21: Cada serviço tem um código identificador único e sequencial.
+* [ ] R22: Estado do serviço: "submetido", "aceite" ou "concluído".
+* [ ] R23: Técnico indica tempo despendido ao concluir o serviço.
+* *[Normal]* [.line-through]#R34: Emitir recibo ao cliente com NIF e custo total do serviço.#
+* *[Normal]* [.line-through]#R35: Módulo de estatísticas para indicar número e valor total de serviços por cliente.#
+
+== Gestão de Equipamentos e Fornecedores
+* [ ] R24: Permitir gestão de equipamentos de hardware.
+* [ ] R25: Código do equipamento é único.
+* [ ] R26: Equipamento pode ter até 6 fornecedores.
+* [ ] R27: Fornecedores caracterizados por nome, morada e contacto.
+* [ ] R28: Equipamento pode ter até 4 categorias.
+* [ ] R29: Cada categoria tem uma designação e família.
+* [ ] R30: Cada série inclui geração e sequência.
+* [ ] R31: Cada versão tem unidade, valor alfa e beta.
+* [ ] R32: Permitir alterar a quantidade em stock.
+* [ ] R33: Stock atualizado ao vender um equipamento.
+
+== Listagens e Pesquisas
+* [ ] R36: Ordenação de utilizadores por nome.
+* [ ] R37: Ordenação de equipamentos por designação.
+* *[Normal]* [.line-through]#R38: Ordenação de serviços por data (do mais recente ao mais antigo).#
+* [ ] R39: Listar todos os utilizadores.
+* [ ] R40: Listar utilizadores por tipo.
+* [ ] R41: Listar todos os serviços.
+* [ ] R42: Listar serviços associados a um cliente.
+* [ ] R43: Listar serviços por estado.
+* [ ] R44: Listar serviços com tempo superior a um limite.
+* [ ] R45: Listar todos os equipamentos.
+* [ ] R46: Listar equipamentos OEM ou não.
+* [ ] R47: Listar equipamentos com stock abaixo de um limite.
+* *[Normal]* [.line-through]#R48: Listar equipamentos mais adquiridos.#
+* [ ] R49: Pesquisar utilizadores por login ou nome.
+* [ ] R50: Pesquisar serviços por código ou descrição.
+* [ ] R51: Pesquisar equipamentos por marca ou código.
+* [ ] R52: Pesquisar equipamentos por categoria.
+* [ ] R53: Pesquisas avançadas (inclui resultados parciais).
+* [ ] R54: Clientes listam e pesquisam serviços que realizaram.
+* [ ] R55: Técnicos listam e pesquisam serviços que processaram.
+* [ ] R56: Administradores listam e pesquisam todos os serviços.
+
+== Persistência e Armazenamento de Dados
+* [ ] R57: Acesso restrito por credenciais.
+* [ ] R58: Dados guardados automaticamente ao encerrar (ficheiro de objetos).
+* [ ] R59: Leitura de dados do ficheiro de objetos ao iniciar a aplicação.
+* *[Normal]* [.line-through]#R60: Exportar serviços realizados para um ficheiro CSV.#
