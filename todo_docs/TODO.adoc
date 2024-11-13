@@ -38,7 +38,7 @@
 * [ ] *Francisco* R21: Cada serviço tem um código identificador único e sequencial.
 * [ ] *Francisco* R22: Estado do serviço: "submetido", "aceite" ou "concluído".
 * [ ] *Francisco* R23: Técnico indica tempo despendido ao concluir o serviço.
-* *[Normal]* <span class="line-through">#R34: Emitir recibo ao cliente com NIF e custo total do serviço.</span>#
+* *[Normal]* <span class="line-through">#R34: Emitir recibo ao cliente com NIF e custo total do serviço.#</span>
 * *[Normal]* [.line-through]#R35: Módulo de estatísticas para indicar número e valor total de serviços por cliente.#
 
 == Gestão de Equipamentos e Fornecedores
