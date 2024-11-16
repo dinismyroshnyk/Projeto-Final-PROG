@@ -1,0 +1,140 @@
+@startuml class-diagram
+
+skinparam linetype ortho
+
+' main classes
+
+class DataContainer {
+    - users : List<User>
+    - requests : List<ServiceRequest>
+    - equipments : List<Equipment>
+}
+
+abstract class User {
+    - login : String
+    - password : String
+    - name : String
+    - status : UserStatus
+    - email : String
+    - type : UserType
+}
+
+class Admin extends User {}
+
+class Technician extends User {
+    - commonParams : CommonUserParams
+}
+
+class Client extends User {
+    - commonParams : CommonUserParams
+}
+
+class ServiceRequest {
+    - id : int
+    - client : Client
+    - technician : Technician
+    - products : List<OrderedProduct>
+    - requestDate : Date
+    - description : String
+    - state : RequestState
+    - totalCost : BigDecimal
+    - timeSpent : Duration
+}
+
+class Equipment {
+    - brand : String
+    - model : String
+    - internalCode : String
+    - series : Series
+    - version : Version
+    - voltage : BigDecimal
+    - stockQuantity : int
+    - salePrice : BigDecimal
+    - oem : boolean
+    - categories : List<Category>[0..4]
+    - suppliers : List<Supplier>[0..6]
+}
+
+class Series {
+    - generation : int
+    - sequence : int
+}
+
+class Version {
+    - unit : int
+    - alphaValue : int
+    - betaValue : int
+}
+
+class Category {
+    - name : String
+    - family : String
+}
+
+class Supplier {
+    - name : String
+    - address : String
+    - phone : String
+}
+
+class ActionLogger {
+    - user : User
+    - action : String
+    - timestamp : Date
+}
+
+
+' helper classes / interfaces / enums
+
+enum UserStatus {
+    ACTIVE
+    INACTIVE
+}
+
+enum UserType {
+    ADMIN
+    TECHNICIAN
+    CLIENT
+}
+
+enum RequestState {
+    SUBMITTED
+    ACCEPTED
+    CONCLUDED
+}
+
+class CommonUserParams {
+    - NIF : String
+    - address : String
+    - phone : String
+}
+
+class OrderedProduct {
+    - product : Equipment
+    - quantity : int
+}
+
+' contains methods related to file management/manipulation
+class FileManager {}
+
+' contains methods related to exception handling and custom exceptions
+class ExceptionManager {}
+
+' contains methods related to security (authentication/authorization, encryption, etc.)
+class SecurityManager {}
+
+' contains methods related to user interface
+class InterfaceManager {}
+
+' contains other utility methods
+class Utils {}
+
+' associations
+
+UserStatus +-- User
+UserType +-- User
+
+RequestState +-- ServiceRequest
+OrderedProduct +-- ServiceRequest
+
+@enduml
