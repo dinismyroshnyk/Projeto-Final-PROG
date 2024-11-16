@@ -1,0 +1,16 @@
+// GraalVM 21 Documentation
+https://www.graalvm.org/jdk21/docs/introduction/
+https://www.graalvm.org/21.3/docs/introduction/
+
+// Java 21 API Specification
+https://docs.oracle.com/en/java/javase/21/docs/api/index.html
+
+// Why BigDecimals and Duration
+https://www.geeksforgeeks.org/bigdecimal-class-java/
+https://www.geeksforgeeks.org/java-time-duration-class-in-java/
+
+// Java I/O (why nio2 and not java.io)
+https://docs.oracle.com/javase/tutorial/essential/io/file.html
+https://dev.java/learn/java-io/reading-writing/buffered-text/
+https://medium.com/@vusal.guliyev.313/writing-files-with-nio-and-io-in-java-bc60b06a413a
+https://www.geeksforgeeks.org/difference-between-java-io-and-java-nio/
