@@ -39,7 +39,7 @@
 * [ ] *Francisco* R22: Estado do serviço: "submetido", "aceite" ou "concluído".
 * [ ] *Francisco* R23: Técnico indica tempo despendido ao concluir o serviço.
 * *[Normal]* +++<s>R34: Emitir recibo ao cliente com NIF e custo total do serviço.</s>+++
-* *[Normal]* [.line-through]#R35: Módulo de estatísticas para indicar número e valor total de serviços por cliente.#
+* *[Normal]* +++<s>R35: Módulo de estatísticas para indicar número e valor total de serviços por cliente.</s>+++
 
 == Gestão de Equipamentos e Fornecedores
 * [ ] R24: Permitir gestão de equipamentos de hardware.
@@ -56,7 +56,7 @@
 == Listagens e Pesquisas
 * [ ] R36: Ordenação de utilizadores por nome.
 * [ ] R37: Ordenação de equipamentos por designação.
-* *[Normal]* [.line-through]#R38: Ordenação de serviços por data (do mais recente ao mais antigo).#
+* *[Normal]* +++<s>R38: Ordenação de serviços por data (do mais recente ao mais antigo).</s>+++
 * [ ] R39: Listar todos os utilizadores.
 * [ ] R40: Listar utilizadores por tipo.
 * [ ] R41: Listar todos os serviços.
@@ -66,7 +66,7 @@
 * [ ] R45: Listar todos os equipamentos.
 * [ ] R46: Listar equipamentos OEM ou não.
 * [ ] R47: Listar equipamentos com stock abaixo de um limite.
-* *[Normal]* [.line-through]#R48: Listar equipamentos mais adquiridos.#
+* *[Normal]* +++<s>R48: Listar equipamentos mais adquiridos.</s>+++
 * [ ] R49: Pesquisar utilizadores por login ou nome.
 * [ ] R50: Pesquisar serviços por código ou descrição.
 * [ ] R51: Pesquisar equipamentos por marca ou código.
@@ -80,4 +80,4 @@
 * [ ] R57: Acesso restrito por credenciais.
 * [ ] R58: Dados guardados automaticamente ao encerrar (ficheiro de objetos).
 * [ ] R59: Leitura de dados do ficheiro de objetos ao iniciar a aplicação.
-* *[Normal]* [.line-through]#R60: Exportar serviços realizados para um ficheiro CSV.#
+* *[Normal]* +++<s>R60: Exportar serviços realizados para um ficheiro CSV.</s>+++
