@@ -1,5 +1,3 @@
 package main;
 
-public class InterfaceManager {
-    
-}
+public class InterfaceManager {}

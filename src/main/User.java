@@ -7,16 +7,15 @@ public abstract class User {
     private UserStatus status;
     private String email;
     private UserType type;
-    
+
     public enum UserStatus {
         ACTIVE,
         INACTIVE
     }
-    
+
     public enum UserType {
         ADMIN,
         TECHNICIAN,
         CLIENT
     }
 }
-

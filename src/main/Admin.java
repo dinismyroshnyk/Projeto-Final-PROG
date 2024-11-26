@@ -1,5 +1,3 @@
 package main;
 
-public class Admin {
-    
-}
+public class Admin {}

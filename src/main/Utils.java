@@ -1,5 +1,3 @@
 package main;
 
-public class Utils {
-    
-}
+public class Utils {}

@@ -1,5 +1,5 @@
 package main;
 
 public class Client {
-    private CommonUserParams commonParans;
+    private CommonUserParams commonParams;
 }
