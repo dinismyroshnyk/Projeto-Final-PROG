@@ -13,10 +13,10 @@
 == Gestão de Acesso e Utilizadores
 * [ ] R1: Permitir registo e autenticação de utilizadores.
 * [ ] R2: Acesso à aplicação com três tipos de utilizadores: administradore*, técnico* e clientes.
-* [ ] *Francisco* R3: Utilizadores têm os atributos: login, password, nome, estado (ativo/inativo), email e tipo(administradores, técnicos ou clientes).
+* [x] *[Francisco]* R3: Utilizadores têm os atributos: login, password, nome, estado (ativo/inativo), email e tipo(administradores, técnicos ou clientes).
 * [ ] R4: Cada utilizador pode apenas visualizar e alterar a sua própria informação.
 * [ ] R5: O login e email devem ser únicos.
-* [ ] *Francisco* R6: Clientes e técnicos têm adicionalmente NIF, morada e contacto telefónico (NIF e contacto únicos).
+* [x] *[Francisco]* R6: Clientes e técnicos têm adicionalmente NIF, morada e contacto telefónico (NIF e contacto únicos).
 * [ ] R7: Ao iniciar, caso não existam utilizadores, a aplicação solicita criação de um administrador.
 * [ ] R8: Mensagem "Bem-vindo [nome utilizador]" após login.
 * [ ] R9: Mensagem "Adeus [nome utilizador]" ao encerrar a aplicação.
@@ -34,22 +34,22 @@
 * [ ] R17: Clientes iniciam uma encomenda, indicando produtos pretendidos.
 * [ ] R18: Administrador aprova serviço e associa um técnico.
 * [ ] R19: Técnico regista o processo, cria sub-tarefas e pode associar técnicos adicionais.
-* [ ] *Francisco* R20: Serviço inclui produtos, data, descrição, estado, tempo de processamento e valor total.
-* [ ] *Francisco* R21: Cada serviço tem um código identificador único e sequencial.
-* [ ] *Francisco* R22: Estado do serviço: "submetido", "aceite" ou "concluído".
-* [ ] *Francisco* R23: Técnico indica tempo despendido ao concluir o serviço.
+* [x] *[Francisco]* R20: Serviço inclui produtos, data, descrição, estado, tempo de processamento e valor total.
+* [x] *[Francisco]* R21: Cada serviço tem um código identificador único e sequencial.
+* [x] *[Francisco]* R22: Estado do serviço: "submetido", "aceite" ou "concluído".
+* [x] *[Francisco]* R23: Técnico indica tempo despendido ao concluir o serviço.
 * *[Normal]* +++<s>R34: Emitir recibo ao cliente com NIF e custo total do serviço.</s>+++
 * *[Normal]* +++<s>R35: Módulo de estatísticas para indicar número e valor total de serviços por cliente.</s>+++
 
 == Gestão de Equipamentos e Fornecedores
 * [ ] R24: Permitir gestão de equipamentos de hardware.
-* [ ] *Francisco* R25: Código do equipamento é único.
-* [ ] *Francisco* R26: Equipamento pode ter até 6 fornecedores.
-* [ ] *Francisco* R27: Fornecedores caracterizados por nome, morada e contacto.
-* [ ] *Francisco* R28: Equipamento pode ter até 4 categorias.
-* [ ] *Francisco* R29: Cada categoria tem uma designação e família.
-* [ ] *Francisco* R30: Cada série inclui geração e sequência.
-* [ ] *Francisco* R31: Cada versão tem unidade, valor alfa e beta.
+* [ ] R25: Código do equipamento é único.
+* [x] *[Francisco]* R26: Equipamento pode ter até 6 fornecedores.
+* [x] *[Francisco]* R27: Fornecedores caracterizados por nome, morada e contacto.
+* [x] *[Francisco]* R28: Equipamento pode ter até 4 categorias.
+* [x] *[Francisco]* R29: Cada categoria tem uma designação e família.
+* [x] *[Francisco]* R30: Cada série inclui geração e sequência.
+* [x] *[Francisco]* R31: Cada versão tem unidade, valor alfa e beta.
 * [ ] R32: Permitir alterar a quantidade em stock.
 * [ ] R33: Stock atualizado ao vender um equipamento.
 
