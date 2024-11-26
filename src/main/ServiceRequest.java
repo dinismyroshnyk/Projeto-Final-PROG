@@ -21,4 +21,9 @@ public class ServiceRequest {
         ACCEPTED,
         CONCLUDED
     }
+
+    private class OrderedProduct {
+        private Equipment product;
+        private int quantity;
+    }
 }
