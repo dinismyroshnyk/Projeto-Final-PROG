@@ -55,14 +55,15 @@ echo Removing tmp folder...
 rmdir /Q tmp
 echo Folder removed.
 
+:: Move to out folder
+cd out
+
 :: Create the system native executable.
 echo Creating system native executable...
-native-image --no-server -jar out/app.jar
+native-image --no-server -jar app.jar
 echo Executable created.
 
-:: Move the native executable to the out directory.
-echo Moving native executable...
-move app out
-echo Executable moved.
+:: Move back to root folder
+cd ..
 
 echo Done.
