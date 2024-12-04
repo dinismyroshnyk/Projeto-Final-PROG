@@ -1,64 +1,103 @@
 #!/bin/bash
 
-# This script compiles the Java files in the src/main directory and creates the app jar and system native executables.
-# It does not update the jar file.
-# Rather, it creates new jar files each time it is ran.
+# This script compiles Java files in the src/main directory, creates the app jar,
+# and optionally creates a system-native executable based on user choice.
 
-# Remove the current content of the out directory.
+# Function to display usage information
+function usage() {
+    echo "Usage: $0 [-y | -n]"
+    echo "  -y: Automatically create the native executable without prompt."
+    echo "  -n: Skip creating the native executable without prompt."
+    exit 1
+}
+
+# Parse command-line options
+CREATE_EXECUTABLE_PROMPT=true
+while getopts "yn" opt; do
+    case "$opt" in
+        y) CREATE_EXECUTABLE_PROMPT=false; CREATE_EXECUTABLE=true ;;
+        n) CREATE_EXECUTABLE_PROMPT=false; CREATE_EXECUTABLE=false ;;
+        *) usage ;;
+    esac
+done
+
+# Remove the current content of the out directory
 echo "Removing content of the out directory..."
 rm -rf out
 echo "Content removed."
 
-# Create the out directory while compiling the Java files.
+# Create the out directory and compile Java files
 echo "Compiling Java files..."
-javac -cp ".:lib/*" -d out/ src/main/*.java -Xlint
+mkdir -p out
+find src/main -name "*.java" > sources.txt
+javac -cp ".:lib/*" -d out @sources.txt -Xlint
+if [ $? -ne 0 ]; then
+    echo "Compilation failed. Exiting..."
+    rm -f sources.txt
+    exit 1
+fi
+rm -f sources.txt
 echo "Compilation complete."
 
-# Extract lib files to the out directory.
+# Extract lib files to the out directory
 echo "Extracting lib files..."
 cd out
 for i in ../lib/*.jar; do
     jar xvf "$i"
 done
-echo "Files extracted."
 cd ..
+echo "Files extracted."
 
-# Remove MANIFEST.MF files from the out directory.
+# Remove MANIFEST.MF files from the out directory
 echo "Removing MANIFEST.MF files..."
 rm -f out/META-INF/MANIFEST.MF
 echo "Files removed."
 
-# Create the app executable jar file.
+# Create the app executable jar file
 echo "Creating app.jar..."
+mkdir -p tmp
 jar cvfe tmp/app.jar main.App -C out/ .
+if [ $? -ne 0 ]; then
+    echo "Error creating app.jar. Exiting..."
+    exit 1
+fi
 echo "app.jar created."
 
-# Recreate the out directory.
-echo "Removing out folder..."
+# Clean and prepare the out directory
+echo "Removing old out folder..."
 rm -rf out
-echo "Folder removed."
-echo "Creating out folder..."
-mkdir out
-echo "Folder created."
+mkdir -p out
+echo "Folder ready."
 
-# Move the jar files to the out directory.
-echo "Moving jar files..."
+# Move the jar file to the out directory
+echo "Moving jar file..."
 mv tmp/* out
-echo "Jar files moved."
-
-# Remove the tmp directory.
-echo "Removing tmp folder..."
 rm -rf tmp
-echo "Folder removed."
+echo "Jar file moved."
 
-# Create the system native executable.
-echo "Creating system native executable..."
-native-image --no-server -jar out/app.jar
-echo "Executable created."
+# Prompt for creating the native executable if no command-line option was given
+if $CREATE_EXECUTABLE_PROMPT; then
+    read -p "Do you want to create the native executable? (y/n): " response
+    case "$response" in
+        [Yy]*) CREATE_EXECUTABLE=true ;;
+        [Nn]*) CREATE_EXECUTABLE=false ;;
+        *) echo "Invalid input. Skipping executable creation." ;;
+    esac
+fi
 
-# Move the native executable to the out directory.
-echo "Moving native executable..."
-mv app out
-echo "Executable moved."
+# Create the system native executable if chosen
+if [ "$CREATE_EXECUTABLE" = true ]; then
+    echo "Creating system native executable..."
+    native-image --no-server -jar out/app.jar
+    if [ $? -ne 0 ]; then
+        echo "Error creating native executable. Skipping..."
+    else
+        echo "Executable created."
+        mv app out
+        echo "Executable moved."
+    fi
+else
+    echo "Skipping native executable creation."
+fi
 
 echo "Done."
