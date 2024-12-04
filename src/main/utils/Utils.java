@@ -1,3 +1,3 @@
-package main;
+package main.utils;
 
 public class Utils {}

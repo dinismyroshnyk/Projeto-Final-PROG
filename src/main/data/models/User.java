@@ -1,4 +1,4 @@
-package main;
+package main.data.models;
 
 public abstract class User {
     private String login;

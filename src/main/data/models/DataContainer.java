@@ -1,4 +1,4 @@
-package main;
+package main.data.models;
 import java.util.List;
 
 public class DataContainer {

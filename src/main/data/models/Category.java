@@ -1,4 +1,4 @@
-package main;
+package main.data.models;
 
 public class Category {
     private String name;

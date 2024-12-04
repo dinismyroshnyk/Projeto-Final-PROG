@@ -14,3 +14,6 @@ https://docs.oracle.com/javase/tutorial/essential/io/file.html
 https://dev.java/learn/java-io/reading-writing/buffered-text/
 https://medium.com/@vusal.guliyev.313/writing-files-with-nio-and-io-in-java-bc60b06a413a
 https://www.geeksforgeeks.org/difference-between-java-io-and-java-nio/
+
+// JLine 3.27.1 JavaDoc
+https://www.javadoc.io/doc/org.jline/jline/latest/index.html
