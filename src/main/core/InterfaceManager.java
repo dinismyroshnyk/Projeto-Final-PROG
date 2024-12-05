@@ -10,11 +10,12 @@ import org.jline.terminal.Terminal.Signal;
 import java.io.IOException;
 
 public class InterfaceManager {
+    private static InterfaceManager interfaceManager;
     private Terminal terminal;
     private Size terminalSize;
     private Size boxSize;
 
-    public InterfaceManager() {
+    private InterfaceManager() {
         try {
             this.terminal = TerminalBuilder.builder().system(true).build();
             this.terminalSize = terminal.getSize();
@@ -23,6 +24,13 @@ public class InterfaceManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static InterfaceManager getInstance() {
+        if (interfaceManager == null) {
+            interfaceManager = new InterfaceManager();
+        }
+        return interfaceManager;
     }
 
     private void setupTerminalResizeHandler() {
@@ -39,6 +47,7 @@ public class InterfaceManager {
     public void run() {
         try {
             terminal.enterRawMode();
+            terminal.puts(InfoCmp.Capability.cursor_invisible);
 
             while (!State.getStateStack().isEmpty()) {
                 State currentState = State.getCurrentState();
@@ -50,14 +59,6 @@ public class InterfaceManager {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            try {
-                clearScreen();
-                terminal.writer().flush();
-                terminal.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 

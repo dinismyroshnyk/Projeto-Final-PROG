@@ -1,9 +1,8 @@
 // GraalVM 21 Documentation
-https://www.graalvm.org/jdk21/docs/introduction/
-https://www.graalvm.org/21.3/docs/introduction/
+https://www.graalvm.org/jdk23/introduction/
 
-// Java 21 API Specification
-https://docs.oracle.com/en/java/javase/21/docs/api/index.html
+// Java 23 API Specification
+https://docs.oracle.com/en/java/javase/23/docs/api/index.html
 
 // Why BigDecimals and Duration
 https://www.geeksforgeeks.org/bigdecimal-class-java/
@@ -17,3 +16,5 @@ https://www.geeksforgeeks.org/difference-between-java-io-and-java-nio/
 
 // JLine 3.27.1 JavaDoc
 https://www.javadoc.io/doc/org.jline/jline/latest/index.html
+
+// Enumeration vs Streams

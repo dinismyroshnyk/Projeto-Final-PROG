@@ -1,68 +1,109 @@
-:: This batch file compiles the Java files in the src/main directory and creates the client jar and system native executables
-:: It does not update the jar file.
-:: Rather, it creates new jar files each time it is ran.
 @echo off
+setlocal enabledelayedexpansion
 
-:: Remove the current content of the out directory.
-echo Removing current out folder...
-rmdir /S /Q out
-echo Folder removed.
+:: Function to display usage information
+:usage
+echo Usage: %0 [-y ^| -n]
+echo   -y: Automatically create the native executable without prompt.
+echo   -n: Skip creating the native executable without prompt.
+exit /b 1
 
-:: Create the tmp directory.
-echo Creating tmp folder...
-mkdir tmp
-echo Folder created.
+:: Parse command-line options
+set CREATE_EXECUTABLE_PROMPT=true
+set CREATE_EXECUTABLE=
 
-:: Create the out directory while compiling the Java files.
+:parse_args
+if "%~1"=="-y" (
+    set CREATE_EXECUTABLE_PROMPT=false
+    set CREATE_EXECUTABLE=true
+    shift
+) else if "%~1"=="-n" (
+    set CREATE_EXECUTABLE_PROMPT=false
+    set CREATE_EXECUTABLE=false
+    shift
+) else if "%~1"=="" (
+    goto :main
+) else (
+    call :usage
+)
+goto :parse_args
+
+:main
+:: Remove the current content of the out directory
+echo Removing content of the out directory...
+if exist out rmdir /S /Q out
+echo Content removed.
+
+:: Create the out directory and compile Java files
 echo Compiling Java files...
-javac -cp ".;lib/*" -d out/ src/main/*.java -Xlint
+mkdir out
+dir /s /B src\main\*.java > sources.txt
+javac -cp ".;lib/*" -d out/ @sources.txt -Xlint
+if errorlevel 1 (
+    echo Compilation failed. Exiting...
+    del sources.txt
+    exit /b 1
+)
+del sources.txt
 echo Compilation complete.
 
-:: Extract lib files to the out directory.
+:: Extract lib files to the out directory
 echo Extracting lib files...
 cd out
 for /r ..\lib %%i in (*.jar) do (
-    jar xvf %%i
+    jar xvf "%%i"
 )
-echo Files extracted.
 cd ..
+echo Files extracted.
 
-:: Remove MANIFEST.MF files from the out directory.
+:: Remove MANIFEST.MF files from the out directory
 echo Removing MANIFEST.MF files...
-del /S /Q out\META-INF\MANIFEST.MF
+if exist out\META-INF\MANIFEST.MF del /S /Q out\META-INF\MANIFEST.MF
 echo Files removed.
 
-:: Create the client executable jar file.
+:: Create the app executable jar file
 echo Creating app.jar...
-jar cvfe tmp/app.jar main.App -C out/ .
+mkdir tmp
+jar cvfe tmp\app.jar main.App -C out/ .
+if errorlevel 1 (
+    echo Error creating app.jar. Exiting...
+    exit /b 1
+)
 echo app.jar created.
 
-:: Recreate the out directory.
-echo Removing out folder...
+:: Clean and prepare the out directory
+echo Removing old out folder...
 rmdir /S /Q out
-echo Folder removed.
-echo Creating out folder...
 mkdir out
-echo Folder created.
+echo Folder ready.
 
-:: Move the jar files to the out directory.
-echo Moving jar files...
+:: Move the jar file to the out directory
+echo Moving jar file...
 move tmp\* out
-echo Jar files moved.
-
-:: Remove the tmp directory.
-echo Removing tmp folder...
 rmdir /Q tmp
-echo Folder removed.
+echo Jar file moved.
 
-:: Create the system native executable.
-echo Creating system native executable...
-native-image --no-server -jar out/app.jar
-echo Executable created.
+:: Prompt for creating the native executable if no command-line option was given
+if %CREATE_EXECUTABLE_PROMPT%==true (
+    set /p response="Do you want to create the native executable? (y/n): "
+    if /I "!response!"=="y" set CREATE_EXECUTABLE=true
+    if /I "!response!"=="n" set CREATE_EXECUTABLE=false
+)
 
-:: Move the native executable to the out directory.
-echo Moving native executable...
-move app out
-echo Executable moved.
+:: Create the system native executable if chosen
+if "%CREATE_EXECUTABLE%"=="true" (
+    echo Creating system native executable...
+    native-image --no-server -jar out\app.jar
+    if errorlevel 1 (
+        echo Error creating native executable. Skipping...
+    ) else (
+        echo Executable created.
+        move app out
+        echo Executable moved.
+    )
+) else (
+    echo Skipping native executable creation.
+)
 
 echo Done.
+endlocal

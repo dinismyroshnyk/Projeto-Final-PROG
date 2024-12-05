@@ -1,8 +1,10 @@
 package main.core.states;
 
 import main.core.InterfaceManager;
+import main.core.KeyboardManager;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.Size;
+
 
 public class FirstUserCreationState extends State {
     private String username = "";
@@ -20,40 +22,26 @@ public class FirstUserCreationState extends State {
 
     @Override
     public void update(int key) {
-        switch (key) {
-            case 'q':
-                // Quit application
-                interfaceManager.clearScreen();
-                System.exit(0);
-                break;
-            case '\t':
-                // Toggle between username and password fields
-                isUsernameSelected = !isUsernameSelected;
-                break;
-            case '\n':
-                // Handle confirmation - could validate and transition to next state
-                if (!username.isEmpty() && !password.isEmpty()) {
-                    createAdminUser();
-                }
-                break;
-            case 127: // Backspace
-                if (isUsernameSelected && !username.isEmpty()) {
-                    username = username.substring(0, username.length() - 1);
-                } else if (!isUsernameSelected && !password.isEmpty()) {
-                    password = password.substring(0, password.length() - 1);
-                }
-                break;
-            default:
-                // Add printable characters to username or password
-                if (key >= 32 && key <= 126) { // Printable ASCII range
-                    if (isUsernameSelected && username.length() < 10) {
-                        username += (char) key;
-                    } else if (!isUsernameSelected && password.length() < 10) {
-                        password += (char) key;
-                    }
-                }
-                break;
+        KeyboardManager.getInstance().update(key);
+        if (KeyboardManager.getInstance().isKeyPressed(KeyboardManager.Keys.Q)) {
+            interfaceManager.clearScreen();
+            System.exit(0);
+        } else if (KeyboardManager.getInstance().isKeyPressed(KeyboardManager.Keys.ARROW_DOWN) || KeyboardManager.getInstance().isKeyPressed(KeyboardManager.Keys.ARROW_UP)) {
+            isUsernameSelected = !isUsernameSelected;
+        } else if (KeyboardManager.getInstance().isKeyPressed(KeyboardManager.Keys.BACKSPACE)) {
+            if (isUsernameSelected && !username.isEmpty()) {
+                username = username.substring(0, username.length() - 1);
+            } else if (!isUsernameSelected && !password.isEmpty()) {
+                password = password.substring(0, password.length() - 1);
+            }
+        } else if (key >= 32 && key <= 126) { // Printable ASCII range
+            if (isUsernameSelected && username.length() < 10) {
+                username += (char) key;
+            } else if (!isUsernameSelected && password.length() < 10) {
+                password += (char) key;
+            }
         }
+        KeyboardManager.getInstance().resetKeyStates();
     }
 
     @Override
@@ -94,9 +82,5 @@ public class FirstUserCreationState extends State {
     @Override
     public void exit() {
         super.exit();
-    }
-
-    private void createAdminUser() {
-        System.out.println("Creating admin user: " + username);
     }
 }

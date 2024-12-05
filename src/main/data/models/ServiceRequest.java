@@ -16,7 +16,7 @@ public class ServiceRequest {
     private BigDecimal totalCost;
     private Duration timeSpent;
 
-    enum RequestState {
+    private enum RequestState {
         SUBMITTED,
         ACCEPTED,
         CONCLUDED
