@@ -1,5 +1,6 @@
 package main.core;
 
+import main.core.states.State;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import org.jline.utils.InfoCmp;
@@ -9,93 +10,67 @@ import org.jline.terminal.Terminal.Signal;
 import java.io.IOException;
 
 public class InterfaceManager {
-    public void drawFirstUserCreationUI() {
-        try (Terminal terminal = TerminalBuilder.builder().system(true).build()) {
-            terminal.enterRawMode();
-            terminal.puts(InfoCmp.Capability.clear_screen);
+    private Terminal terminal;
+    private Size terminalSize;
+    private Size boxSize;
 
-            // Instructions
-            String instructions = "Press 'q' to quit";
-
-            // Initial terminal size
-            Size termSize = terminal.getSize();
-
-            // Box dimensions
-            Size boxSize = new Size(60, 30);
-
-            // Redraw the UI on resize
-            terminal.handle(Signal.WINCH, _ -> {
-                Size newTermSize = terminal.getSize();
-                termSize.copy(newTermSize);
-                redrawUI(terminal, termSize, boxSize, instructions);
-            });
-
-            // Initial draw
-            redrawUI(terminal, termSize, boxSize, instructions);
-
-            // redraw UI
-            while (true) {
-                String keySequence = readKeySequence(terminal);
-
-                redrawUI(terminal, termSize, boxSize, instructions);
-
-                if (keySequence.equals("q")) {
-                    terminal.puts(InfoCmp.Capability.clear_screen);
-                    terminal.writer().flush();
-                    System.exit(0);
-                }
-            }
-        } catch (Exception e) {
+    public InterfaceManager() {
+        try {
+            this.terminal = TerminalBuilder.builder().system(true).build();
+            this.terminalSize = terminal.getSize();
+            this.boxSize = new Size(60, 30);
+            setupTerminalResizeHandler();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private String readKeySequence(Terminal terminal) throws IOException {
-        StringBuilder sequence = new StringBuilder();
-
-        // First read
-        int firstChar = terminal.reader().read();
-        if (firstChar == -1) {
-            return "";
-        }
-        sequence.append((char) firstChar);
-
-        // Check for additional bytes in the sequence
-        while (terminal.reader().ready()) {
-            int nextChar = terminal.reader().read();
-            if (nextChar == -1) break;
-            sequence.append((char) nextChar);
-        }
-
-        return sequence.toString();
+    private void setupTerminalResizeHandler() {
+        terminal.handle(Signal.WINCH, _ -> {
+            Size newTermSize = terminal.getSize();
+            terminalSize.copy(newTermSize);
+            if (!State.getStateStack().isEmpty()) {
+                State.getCurrentState().render(terminal, terminalSize, boxSize);
+            }
+        });
     }
 
-    private void redrawUI(Terminal terminal, Size termSize, Size boxSize, String instructions) {
-        int boxStartX = (termSize.getColumns() - boxSize.getColumns()) / 2;
-        int boxStartY = (termSize.getRows() - boxSize.getRows()) / 2;
-        Size outterBoxStartPos = new Size(boxStartX, boxStartY);
 
+    public void run() {
+        try {
+            terminal.enterRawMode();
+
+            while (!State.getStateStack().isEmpty()) {
+                State currentState = State.getCurrentState();
+                clearScreen();
+                currentState.render(terminal, terminalSize, boxSize);
+
+                int key = readKey();
+                currentState.update(key);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                clearScreen();
+                terminal.writer().flush();
+                terminal.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void clearScreen() {
         terminal.puts(InfoCmp.Capability.clear_screen);
-        drawOutterBox(terminal, outterBoxStartPos, boxSize, instructions);
-
-        Size messageBoxStartPos = new Size(outterBoxStartPos.getColumns() + 2, outterBoxStartPos.getRows() + 1);
-        Size mainBoxSize = new Size(boxSize.getColumns() - 4, boxSize.getRows() - 20);
-        drawInnerBox(terminal, messageBoxStartPos, mainBoxSize, "No admin user found !\nCreating admin...", false);
-
-        Size inputBoxStartPos = new Size(outterBoxStartPos.getColumns() + 2, messageBoxStartPos.getRows() + mainBoxSize.getRows());
-        drawInnerBox(terminal, inputBoxStartPos, mainBoxSize, "username: [          ]\npassword: [          ]", true);
-
-        // Bottom action boxes
-        Size quitBoxPos = new Size(outterBoxStartPos.getColumns() + 2, inputBoxStartPos.getRows() + mainBoxSize.getRows());
-        Size confirmBoxPos = new Size(quitBoxPos.getColumns() + mainBoxSize.getColumns() / 2 + 2, quitBoxPos.getRows());
-        Size actionBoxSize = new Size(mainBoxSize.getColumns() / 2 - 2, 3);
-        drawActionBox(terminal, quitBoxPos, actionBoxSize, "QUIT");
-        drawActionBox(terminal, confirmBoxPos, actionBoxSize, "CONFIRM");
-
         terminal.writer().flush();
     }
 
-    private static void drawOutterBox(Terminal terminal, Size boxStartPos, Size boxSize, String instructions) {
+    private int readKey() throws IOException {
+        return terminal.reader().read();
+    }
+
+    public void drawOutterBox(Terminal terminal, Size boxStartPos, Size boxSize, String instructions) {
         String horizontal = "─".repeat(boxSize.getColumns() - 2);
 
         // Top border
@@ -120,7 +95,7 @@ public class InterfaceManager {
         terminal.writer().flush();
     }
 
-    private static void drawInnerBox(Terminal terminal, Size boxStartPos, Size boxSize, String content, boolean isInputBox) {
+    public void drawInnerBox(Terminal terminal, Size boxStartPos, Size boxSize, String content, boolean isInputBox) {
         String horizontal = "─".repeat(boxSize.getColumns() - 2);
 
         // Top border
@@ -148,7 +123,7 @@ public class InterfaceManager {
         terminal.writer().flush();
     }
 
-    private static void drawActionBox(Terminal terminal, Size boxStartPos, Size boxSize, String content) {
+    public void drawActionBox(Terminal terminal, Size boxStartPos, Size boxSize, String content) {
         String horizontal = "─".repeat(boxSize.getColumns() - 2);
 
         // Top border
@@ -171,4 +146,8 @@ public class InterfaceManager {
 
         terminal.writer().flush();
     }
+
+    public Terminal getTerminal() { return terminal; }
+    public Size getTerminalSize() { return terminalSize; }
+    public Size getBoxSize() { return boxSize; }
 }
