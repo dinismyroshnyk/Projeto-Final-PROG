@@ -17,7 +17,7 @@ public class KeyboardManager {
         Q
     }
 
-    public enum EscapeSequence {
+    private enum EscapeSequence {
         UP(new int[]{91, 65}, new int[] {79, 65}),
         DOWN(new int[]{91, 66}, new int[] {79, 66}),
         RIGHT(new int[]{91, 67}, new int[] {79, 67}),
@@ -31,10 +31,10 @@ public class KeyboardManager {
             this.seq2 = seq2;
         }
 
-        public int[] getSeq1() { return seq1; }
-        public int[] getSeq2() { return seq2; }
+        private int[] getSeq1() { return seq1; }
+        private int[] getSeq2() { return seq2; }
 
-        public static Keys getKeyBySequence(int[] seq){
+        private static Keys getKeyBySequence(int[] seq){
             for (EscapeSequence escapeSequence : values()){
                 if(arrayEquals(escapeSequence.getSeq1(), seq) || arrayEquals(escapeSequence.getSeq2(), seq)){
                     switch (escapeSequence){
