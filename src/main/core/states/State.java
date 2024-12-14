@@ -1,7 +1,9 @@
 package main.core.states;
 
 import main.core.InterfaceManager;
+
 import org.jline.terminal.Size;
+
 import java.util.Stack;
 
 public abstract class State {
