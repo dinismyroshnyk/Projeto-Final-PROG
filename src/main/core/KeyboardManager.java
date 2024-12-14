@@ -6,6 +6,8 @@ import java.util.Map;
 
 public class KeyboardManager {
     private static KeyboardManager keyboardManager;
+    public static final int ASCII_PRINTABLE_START = 32;
+    public static final int ASCII_PRINTABLE_END = 126;
 
     public enum Keys {
         ARROW_UP,

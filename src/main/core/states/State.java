@@ -1,7 +1,6 @@
 package main.core.states;
 
 import main.core.InterfaceManager;
-import org.jline.terminal.Terminal;
 import org.jline.terminal.Size;
 import java.util.Stack;
 
@@ -25,7 +24,7 @@ public abstract class State {
     }
 
     public abstract void update(int key);
-    public abstract void render(Terminal terminal, Size termSize, Size boxSize);
+    public abstract void render(Size termSize, Size boxSize);
 
     public static State getCurrentState() {
         return stateStack.isEmpty() ? null : stateStack.peek();

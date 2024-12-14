@@ -14,12 +14,45 @@ public class InterfaceManager {
     private Terminal terminal;
     private Size terminalSize;
     private Size boxSize;
+    private StringBuilder renderBuffer;
+
+    public static class LayoutParameters {
+        private Size outterBoxStartPos;
+        private Size messageBoxStartPos;
+        private Size mainBoxSize;
+        private Size inputBoxStartPos;
+        private Size quitBoxPos;
+        private Size confirmBoxPos;
+        private Size actionBoxSize;
+
+        public LayoutParameters(Size terminalSize, Size boxSize) {
+            int boxStartX = (terminalSize.getColumns() - boxSize.getColumns()) / 2;
+            int boxStartY = (terminalSize.getRows() - boxSize.getRows()) / 2;
+
+            this.outterBoxStartPos = new Size(boxStartX, boxStartY);
+            this.messageBoxStartPos = new Size(boxStartX + 2, boxStartY + 1);
+            this.mainBoxSize = new Size(boxSize.getColumns() - 4, boxSize.getRows() - 20);
+            this.inputBoxStartPos = new Size(boxStartX + 2, this.messageBoxStartPos.getRows() + this.mainBoxSize.getRows());
+            this.quitBoxPos = new Size(boxStartX + 2, this.inputBoxStartPos.getRows() + this.mainBoxSize.getRows());
+            this.confirmBoxPos = new Size(this.quitBoxPos.getColumns() + this.mainBoxSize.getColumns() / 2 + 2, this.quitBoxPos.getRows());
+            this.actionBoxSize = new Size(this.mainBoxSize.getColumns() / 2 - 2, 3);
+        }
+
+        public Size getOutterBoxStartPos() { return outterBoxStartPos; }
+        public Size getMessageBoxStartPos() { return messageBoxStartPos; }
+        public Size getMainBoxSize() { return mainBoxSize; }
+        public Size getInputBoxStartPos() { return inputBoxStartPos; }
+        public Size getQuitBoxPos() { return quitBoxPos; }
+        public Size getConfirmBoxPos() { return confirmBoxPos; }
+        public Size getActionBoxSize() { return actionBoxSize; }
+    }
 
     private InterfaceManager() {
         try {
             this.terminal = TerminalBuilder.builder().system(true).build();
             this.terminalSize = terminal.getSize();
             this.boxSize = new Size(60, 30);
+            this.renderBuffer = new StringBuilder(2048); // Pre-allocate a reasonable buffer size
             setupTerminalResizeHandler();
         } catch (IOException e) {
             e.printStackTrace();
@@ -38,11 +71,13 @@ public class InterfaceManager {
             Size newTermSize = terminal.getSize();
             terminalSize.copy(newTermSize);
             if (!State.getStateStack().isEmpty()) {
-                State.getCurrentState().render(terminal, terminalSize, boxSize);
+                clearRenderBuffer();
+                State.getCurrentState().render(terminalSize, boxSize);
+                terminal.writer().print(renderBuffer);
+                terminal.writer().flush();
             }
         });
     }
-
 
     public void run() {
         try {
@@ -52,7 +87,10 @@ public class InterfaceManager {
             while (!State.getStateStack().isEmpty()) {
                 State currentState = State.getCurrentState();
                 clearScreen();
-                currentState.render(terminal, terminalSize, boxSize);
+                clearRenderBuffer();
+                currentState.render(terminalSize, boxSize);
+                terminal.writer().print(renderBuffer);
+                terminal.writer().flush();
 
                 int key = readKey();
                 currentState.update(key);
@@ -60,6 +98,10 @@ public class InterfaceManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void clearRenderBuffer() {
+        renderBuffer.setLength(0);
     }
 
     public void clearScreen() {
@@ -71,36 +113,34 @@ public class InterfaceManager {
         return terminal.reader().read();
     }
 
-    public void drawOutterBox(Terminal terminal, Size boxStartPos, Size boxSize, String instructions) {
+    public void drawOutterBox(Size boxStartPos, Size boxSize, String instructions) {
         String horizontal = "─".repeat(boxSize.getColumns() - 2);
 
         // Top border
-        terminal.writer().println("\033[" + boxStartPos.getRows() + ";" + boxStartPos.getColumns() + "H┌" + horizontal + "┐");
+        renderBuffer.append(String.format("\033[%d;%dH┌%s┐%n", boxStartPos.getRows(), boxStartPos.getColumns(), horizontal));
 
         // Vertical borders
         for (int i = 1; i < boxSize.getRows() - 1; i++) {
-            terminal.writer().println("\033[" + (boxStartPos.getRows() + i) + ";" + boxStartPos.getColumns() + "H│" + " ".repeat(boxSize.getColumns() - 2) + "│");
+            renderBuffer.append(String.format("\033[%d;%dH│%s│%n", boxStartPos.getRows() + i, boxStartPos.getColumns(), " ".repeat(boxSize.getColumns() - 2)));
         }
 
         // Dividing line
         int dividerY = boxStartPos.getRows() + boxSize.getRows() - 3;
         String dividerLine = "─".repeat(boxSize.getColumns() - 2);
-        terminal.writer().println("\033[" + dividerY + ";" + boxStartPos.getColumns() + "H├" + dividerLine + "┤");
+        renderBuffer.append(String.format("\033[%d;%dH├%s┤%n", dividerY, boxStartPos.getColumns(), dividerLine));
 
         // Instructions
-        terminal.writer().println("\033[" + (dividerY + 1) + ";" + (boxStartPos.getColumns() + 2) + "H" + instructions);
+        renderBuffer.append(String.format("\033[%d;%dH%s%n", dividerY + 1, boxStartPos.getColumns() + 2, instructions));
 
         // Bottom border
-        terminal.writer().println("\033[" + (boxStartPos.getRows() + boxSize.getRows() - 1) + ";" + boxStartPos.getColumns() + "H└" + horizontal + "┘");
-
-        terminal.writer().flush();
+        renderBuffer.append(String.format("\033[%d;%dH└%s┘%n", boxStartPos.getRows() + boxSize.getRows() - 1, boxStartPos.getColumns(), horizontal));
     }
 
-    public void drawInnerBox(Terminal terminal, Size boxStartPos, Size boxSize, String content, boolean isInputBox) {
+    public void drawInnerBox(Size boxStartPos, Size boxSize, String content, boolean isInputBox) {
         String horizontal = "─".repeat(boxSize.getColumns() - 2);
 
         // Top border
-        terminal.writer().println("\033[" + boxStartPos.getRows() + ";" + boxStartPos.getColumns() + "H┌" + horizontal + "┐");
+        renderBuffer.append(String.format("\033[%d;%dH┌%s┐%n", boxStartPos.getRows(), boxStartPos.getColumns(), horizontal));
 
         // Vertical borders with content
         String[] lines = content.split("\n");
@@ -115,20 +155,18 @@ public class InterfaceManager {
                 paddedLine = paddedLine.replace("[          ]", "\033[47m[          ]\033[0m");
             }
 
-            terminal.writer().println("\033[" + (boxStartPos.getRows() + i) + ";" + boxStartPos.getColumns() + "H│" + paddedLine + "│");
+            renderBuffer.append(String.format("\033[%d;%dH│%s│%n", boxStartPos.getRows() + i, boxStartPos.getColumns(), paddedLine));
         }
 
         // Bottom border
-        terminal.writer().println("\033[" + (boxStartPos.getRows() + boxSize.getRows() - 1) + ";" + boxStartPos.getColumns() + "H└" + horizontal + "┘");
-
-        terminal.writer().flush();
+        renderBuffer.append(String.format("\033[%d;%dH└%s┘%n", boxStartPos.getRows() + boxSize.getRows() - 1, boxStartPos.getColumns(), horizontal));
     }
 
-    public void drawActionBox(Terminal terminal, Size boxStartPos, Size boxSize, String content) {
+    public void drawActionBox(Size boxStartPos, Size boxSize, String content) {
         String horizontal = "─".repeat(boxSize.getColumns() - 2);
 
         // Top border
-        terminal.writer().println("\033[" + boxStartPos.getRows() + ";" + boxStartPos.getColumns() + "H┌" + horizontal + "┐");
+        renderBuffer.append(String.format("\033[%d;%dH┌%s┐%n", boxStartPos.getRows(), boxStartPos.getColumns(), horizontal));
 
         // Vertical borders with centered content
         int contentStart = (boxSize.getColumns() - 2 - content.length()) / 2;
@@ -137,15 +175,13 @@ public class InterfaceManager {
         for (int i = 1; i < boxSize.getRows() - 1; i++) {
             String line = emptyLine;
             if (i == boxSize.getRows() / 2) {
-                line = " ".repeat(contentStart) + content +" ".repeat(boxSize.getColumns() - 2 - contentStart - content.length());
+                line = " ".repeat(contentStart) + content + " ".repeat(boxSize.getColumns() - 2 - contentStart - content.length());
             }
-            terminal.writer().println("\033[" + (boxStartPos.getRows() + i) + ";" + boxStartPos.getColumns() + "H│" + line + "│");
+            renderBuffer.append(String.format("\033[%d;%dH│%s│%n", boxStartPos.getRows() + i, boxStartPos.getColumns(), line));
         }
 
         // Bottom border
-        terminal.writer().println("\033[" + (boxStartPos.getRows() + boxSize.getRows() - 1) + ";" + boxStartPos.getColumns() + "H└" + horizontal + "┘");
-
-        terminal.writer().flush();
+        renderBuffer.append(String.format("\033[%d;%dH└%s┘%n", boxStartPos.getRows() + boxSize.getRows() - 1, boxStartPos.getColumns(), horizontal));
     }
 
     public Terminal getTerminal() { return terminal; }
