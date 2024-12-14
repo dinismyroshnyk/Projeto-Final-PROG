@@ -103,8 +103,9 @@ if "%CREATE_EXECUTABLE%"=="true" (
         exit /b 1
     )
     if exist app.exe (
-        :: Move the executable to the out directory
+        :: Move the executable and possible dll's to the out directory
         move app.exe out
+        if exist *.dll move *.dll out
         echo Executable moved.
     ) else (
         echo Executable not found. Exiting...

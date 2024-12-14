@@ -1,3 +1,9 @@
+// Download JAR libraries
+https://mvnrepository.com/
+
+// Solution for `java.io.IOException` on Windows using `Lanterna`
+https://stackoverflow.com/questions/78192818/java-io-ioexception-to-use-lanterna-on-windows-either-add-jna-and-jna-platfor
+
 // GraalVM 21 Documentation
 https://www.graalvm.org/jdk23/introduction/
 

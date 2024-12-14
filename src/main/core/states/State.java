@@ -1,4 +1,4 @@
-package main.core.states;
+/*package main.core.states;
 
 import main.core.InterfaceManager;
 import org.jline.terminal.Terminal;
@@ -26,6 +26,49 @@ public abstract class State {
 
     public abstract void update(int key);
     public abstract void render(Terminal terminal, Size termSize, Size boxSize);
+
+    public static State getCurrentState() {
+        return stateStack.isEmpty() ? null : stateStack.peek();
+    }
+
+    public static Stack<State> getStateStack() {
+        return stateStack;
+    }
+}*/
+
+package main.core.states;
+
+
+import com.googlecode.lanterna.screen.Screen;
+import com.googlecode.lanterna.TerminalSize;
+import main.core.InterfaceManager;
+
+import java.io.IOException;
+import java.util.Stack;
+
+import com.googlecode.lanterna.input.KeyStroke;
+
+public abstract class State {
+    protected InterfaceManager interfaceManager;
+    private static Stack<State> stateStack = new Stack<>();
+
+    public State(InterfaceManager interfaceManager) {
+        this.interfaceManager = interfaceManager;
+    }
+
+    public void enter() {
+        stateStack.push(this);
+    }
+
+    public void exit() {
+        stateStack.pop();
+        if (!stateStack.isEmpty()) {
+            stateStack.peek().enter();
+        }
+    }
+
+    public abstract void update(KeyStroke key);
+    public abstract void render(Screen screen, TerminalSize termSize, TerminalSize boxSize) throws IOException;
 
     public static State getCurrentState() {
         return stateStack.isEmpty() ? null : stateStack.peek();
