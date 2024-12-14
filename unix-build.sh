@@ -94,6 +94,9 @@ if [ "$CREATE_EXECUTABLE" = true ]; then
     else
         echo "Executable created."
         mv app out
+        if [ -f *.so ]; then
+            mv *.so out
+        fi
         echo "Executable moved."
     fi
 else
