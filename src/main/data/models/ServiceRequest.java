@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.time.Duration;
 
 
+@SuppressWarnings("unused") // Temporary, until the model is implemented
 public class ServiceRequest {
     private int id;
     private Client client;
