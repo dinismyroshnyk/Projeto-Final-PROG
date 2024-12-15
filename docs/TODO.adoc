@@ -1,7 +1,7 @@
 = Requisitos do Projeto
 
 == Requisitos Não Funcionais
-* [ ] R61: Disponibilizar uma interface em modo texto onde o utilizador possa interagir com a aplicação.
+* [x] *[Dinis]* R61: Disponibilizar uma interface em modo texto onde o utilizador possa interagir com a aplicação.
 * [ ] R62: Guardar todas as ações dos utilizadores num ficheiro de log.
 * [ ] R63: Permitir consulta do log de ações através da aplicação.
 * [ ] R64: Registar o número total de execuções e o login do último utilizador, guardando num ficheiro de objetos.
@@ -77,7 +77,7 @@
 * [ ] R56: Administradores listam e pesquisam todos os serviços.
 
 == Persistência e Armazenamento de Dados
-* [ ] R57: Acesso restrito por credenciais.
+* [ ] R57: Acesso restrito por credenciais armazenadas num ficheiro "credenciais_acesso.txt".
 * [ ] R58: Dados guardados automaticamente ao encerrar (ficheiro de objetos).
 * [ ] R59: Leitura de dados do ficheiro de objetos ao iniciar a aplicação.
 * *[Normal]* +++<s>R60: Exportar serviços realizados para um ficheiro CSV.</s>+++

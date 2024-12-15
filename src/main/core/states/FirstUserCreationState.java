@@ -2,6 +2,7 @@ package main.core.states;
 
 import main.core.InterfaceManager;
 import main.core.KeyboardManager;
+import main.data.persistence.FileManager;
 
 import java.util.Map;
 
@@ -17,9 +18,11 @@ public class FirstUserCreationState extends State {
     private enum InputField { NONE, USERNAME, PASSWORD }
     private enum ActionBox { NONE, QUIT, CONFIRM }
     private InterfaceManager.LayoutParameters layoutParams;
+    private FileManager fileManager;
 
     public FirstUserCreationState(InterfaceManager interfaceManager) {
         super(interfaceManager);
+        this.fileManager = FileManager.getInstance();
     }
 
     @Override
@@ -97,6 +100,7 @@ public class FirstUserCreationState extends State {
             interfaceManager.clearScreen();
             System.exit(0);
         } else if (selectedActionBox == ActionBox.CONFIRM){
+            fileManager.saveCredentials(username.toString(), password.toString());
             new LoggedUserState(InterfaceManager.getInstance(), username.toString()).enter();
         }
     }
