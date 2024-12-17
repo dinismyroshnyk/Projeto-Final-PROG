@@ -1,69 +1,128 @@
-:: This batch file compiles the Java files in the src/main directory and creates the client jar and system native executables
-:: It does not update the jar file.
-:: Rather, it creates new jar files each time it is ran.
 @echo off
+setlocal enabledelayedexpansion
 
-:: Remove the current content of the out directory.
-echo Removing current out folder...
-rmdir /S /Q out
-echo Folder removed.
+:: This script compiles Java files in the src\main directory, creates the app jar,
+:: and optionally creates a system-native executable based on user choice.
 
-:: Create the tmp directory.
-echo Creating tmp folder...
-mkdir tmp
-echo Folder created.
+:: Parse command-line options
+set CREATE_EXECUTABLE_PROMPT=true
+set INVALID_ARGUMENT=false
 
-:: Create the out directory while compiling the Java files.
+for %%i in (%*) do (
+    if /i "%%i"=="-y" (
+        set CREATE_EXECUTABLE_PROMPT=false
+        set CREATE_EXECUTABLE=true
+    ) else if /i "%%i"=="-n" (
+        set CREATE_EXECUTABLE_PROMPT=false
+        set CREATE_EXECUTABLE=false
+    ) else (
+        set INVALID_ARGUMENT=true
+    )
+)
+
+:: Display usage if invalid argument is detected
+if "%INVALID_ARGUMENT%"=="true" goto :usage
+
+:: Remove the current content of the out directory
+echo Removing content of the out directory...
+if exist out rmdir /S /Q out
+echo Content removed.
+
+:: Create the out directory and compile Java files
 echo Compiling Java files...
-javac -cp ".;lib/*" -d out/ src/main/*.java -Xlint
+mkdir out
+:: Find all Java source files in src\main and list them in sources.txt
+dir /s /B src\main\*.java > sources.txt
+:: Compile the listed Java files to the out directory
+javac -cp ".;lib/*" -d out/ @sources.txt -Xlint
+if errorlevel 1 (
+    echo Compilation failed. Exiting...
+    del sources.txt
+    exit /b 1
+)
+:: Remove the temporary sources.txt file after compilation
+del sources.txt
 echo Compilation complete.
 
-:: Extract lib files to the out directory.
+:: Extract library (JAR) files to the out directory
 echo Extracting lib files...
 cd out
 for /r ..\lib %%i in (*.jar) do (
-    jar xvf %%i
+    jar xvf "%%i"
 )
-echo Files extracted.
 cd ..
+echo Files extracted.
 
-:: Remove MANIFEST.MF files from the out directory.
+:: Remove existing MANIFEST.MF files from the out directory
 echo Removing MANIFEST.MF files...
-del /S /Q out\META-INF\MANIFEST.MF
+if exist out\META-INF\MANIFEST.MF del /S /Q out\META-INF\MANIFEST.MF
 echo Files removed.
 
-:: Create the client executable jar file.
+:: Create the app executable jar file
 echo Creating app.jar...
-jar cvfe tmp/app.jar main.App -C out/ .
+mkdir tmp
+jar cvfe tmp\app.jar main.App -C out/ .
+if errorlevel 1 (
+    echo Error creating app.jar. Exiting...
+    exit /b 1
+)
 echo app.jar created.
 
-:: Recreate the out directory.
-echo Removing out folder...
+:: Clean and prepare the out directory
+echo Removing old out folder...
 rmdir /S /Q out
-echo Folder removed.
-echo Creating out folder...
 mkdir out
-echo Folder created.
+echo Folder ready.
 
-:: Move the jar files to the out directory.
-echo Moving jar files...
+:: Move the jar file to the out directory
+echo Moving jar file...
 move tmp\* out
-echo Jar files moved.
-
-:: Remove the tmp directory.
-echo Removing tmp folder...
 rmdir /Q tmp
-echo Folder removed.
+echo Jar file moved.
 
-:: Move to out folder
-cd out
+:: Prompt for creating the native executable if no argument was provided
+if "%CREATE_EXECUTABLE_PROMPT%"=="true" (
+    :: Prompt the user for input: "Do you want to create the native executable?"
+    choice /M "Do you want to create the native executable?"
+    if errorlevel 2 (
+        set CREATE_EXECUTABLE=false
+    ) else if errorlevel 1 (
+        set CREATE_EXECUTABLE=true
+    ) else (
+        set CREATE_EXECUTABLE=false
+    )
+)
 
-:: Create the system native executable.
-echo Creating system native executable...
-native-image --no-server -jar app.jar
-echo Executable created.
-
-:: Move back to root folder
-cd ..
+:: Create the system-native executable if chosen
+if "%CREATE_EXECUTABLE%"=="true" (
+    echo Creating system native executable...
+    :: Use GraalVM native-image to create a native executable
+    call native-image --no-server -jar out\app.jar
+    if errorlevel 1 (
+        echo Error creating native executable. Exiting...
+        exit /b 1
+    )
+    if exist app.exe (
+        :: Move the executable and possible dll's to the out directory
+        move app.exe out
+        if exist *.dll move *.dll out
+        echo Executable moved.
+    ) else (
+        echo Executable not found. Exiting...
+        exit /b 1
+    )
+) else (
+    echo Skipping native executable creation.
+)
 
 echo Done.
+exit /b 0
+
+:: Function to display usage information
+:usage
+echo Usage: win-build [-y] [-n]
+echo -y: Create the native executable
+echo -n: Do not create the native executable
+exit /b 1
+
+endlocal

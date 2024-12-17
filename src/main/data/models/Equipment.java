@@ -1,7 +1,8 @@
-package main;
+package main.data.models;
 import java.math.BigDecimal;
 import java.util.List;
 
+@SuppressWarnings("unused") // Temporary, until the model is implemented
 public class Equipment {
     private String brand;
     private String model;

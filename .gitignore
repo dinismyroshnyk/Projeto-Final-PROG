@@ -1,1 +1,4 @@
 *app
+.vscode
+out
+data

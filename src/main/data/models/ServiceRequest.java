@@ -1,10 +1,11 @@
-package main;
+package main.data.models;
 import java.util.Date;
 import java.util.List;
 import java.math.BigDecimal;
 import java.time.Duration;
 
 
+@SuppressWarnings("unused") // Temporary, until the model is implemented
 public class ServiceRequest {
     private int id;
     private Client client;
@@ -16,9 +17,14 @@ public class ServiceRequest {
     private BigDecimal totalCost;
     private Duration timeSpent;
 
-    enum RequestState {
+    private enum RequestState {
         SUBMITTED,
         ACCEPTED,
         CONCLUDED
+    }
+
+    private class OrderedProduct {
+        private Equipment product;
+        private int quantity;
     }
 }
