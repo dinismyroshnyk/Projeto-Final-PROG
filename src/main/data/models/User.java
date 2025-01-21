@@ -1,6 +1,5 @@
 package main.data.models;
 
-@SuppressWarnings("unused") // Temporary, until the model is implemented
 public abstract class User {
     private String login;
     private String password;
